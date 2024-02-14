@@ -3,6 +3,8 @@ from sqlalchemy import func, desc, select, and_, distinct
 from conf.models import Grade, Teacher, Student, Group, Subject
 from conf.db import session
 
+import sys
+
 
 def select_01():
     """
@@ -18,7 +20,7 @@ def select_01():
     """
     result = session.query(Student.id, Student.fullname, func.round(func.avg(Grade.grade), 2).label('average_grade')) \
         .select_from(Student).join(Grade).group_by(Student.id).order_by(desc('average_grade')).limit(5).all()
-    return result
+    return print(result)
 
 
 def select_02():
@@ -37,7 +39,7 @@ def select_02():
     result = session.query(Student.id, Student.fullname, func.round(func.avg(Grade.grade), 2).label('average_grade')) \
         .select_from(Grade).join(Student).filter(Grade.subject_id == 1).group_by(Student.id).order_by(
         desc('average_grade')).limit(1).all()
-    return result
+    return print(result)
 
 
 def select_03():
@@ -60,7 +62,7 @@ def select_03():
     result = session.query(Group.name, Subject.name, func.round(func.avg(Grade.grade), 2).label('average_grade')) \
         .select_from(Grade).join(Student).join(Group).join(Subject).filter(Subject.id == 9) \
         .group_by(Group.name, Subject.name).order_by(Group.name).all()
-    return result
+    return print(result)
 
 
 def select_04():
@@ -79,7 +81,7 @@ def select_04():
     """
     result = session.query(Group.name, Student.fullname, func.round(func.avg(Grade.grade))) \
         .select_from(Grade).join(Student).join(Group).group_by(Group.name, Student.fullname).all()
-    return result
+    return print(result)
 
 
 def select_05():
@@ -93,7 +95,7 @@ def select_05():
 
     result = session.query(Teacher.fullname, Subject.name).select_from(Subject).join(Teacher).filter(Teacher.id == 2) \
         .group_by(Teacher.fullname, Subject.name).all()
-    return result
+    return print(result)
 
 
 def select_06():
@@ -108,7 +110,7 @@ def select_06():
 
     result = session.query(Student.fullname, Group.name).select_from(Student).join(Group) \
         .filter(Group.id == 2).all()
-    return result
+    return print(result)
 
 
 def select_07():
@@ -128,7 +130,7 @@ def select_07():
     result = session.query(Student.fullname, Group.name, Subject.name, Grade.grade).select_from(Grade) \
         .join(Student).join(Group).join(Subject).filter(and_(Group.id == 1, Subject.id == 9)) \
         .order_by(Student.fullname).all()
-    return result
+    return print(result)
 
 
 def select_08():
@@ -147,11 +149,10 @@ def select_08():
     """
     result = session.query(Teacher.fullname, Subject.name, func.round(func.avg(Grade.grade))).select_from(Subject) \
         .join(Teacher).join(Grade).filter(Teacher.id == 3).group_by(Teacher.fullname, Subject.name).all()
-    return result
+    return print(result)
 
 
 def select_09():
-    pass
     """
     SELECT
         students.fullname AS student_name,
@@ -166,7 +167,7 @@ def select_09():
     """
     result = session.query(Student.fullname, Subject.name).select_from(Subject).join(Grade).join(Student) \
         .filter(Student.id == 1).group_by(Student.fullname, Subject.name).all()
-    return result
+    return print(result)
 
 
 def select_10():
@@ -187,7 +188,7 @@ def select_10():
         .select_from(Subject) \
         .join(Grade).join(Teacher).join(Student).filter(Student.id == 30) \
         .group_by(Student.fullname, Subject.name, Teacher.fullname).all()
-    return result
+    return print(result)
 
 
 def select_11():
@@ -201,7 +202,7 @@ def select_11():
 
     result = session.query(func.round(func.avg(Grade.grade)).label('Avenger_grade')).select_from(Grade).join(Subject) \
         .filter(and_(Subject.teacher_id == 5, Grade.student_id == 3)).all()
-    return result
+    return print(result)
 
 
 def select_12():
@@ -232,7 +233,7 @@ def select_12():
         .join(Student) \
         .filter(and_(Grade.subject_id == 2, Student.group_id == 3, Grade.grade_date == subquery)).all()
 
-    return result
+    return print(result)
 
 
 def select_x():
@@ -245,10 +246,36 @@ def select_x():
     """
     result = session.query(Student.fullname, func.count(Grade.grade).label('grades')) \
         .select_from(Student).join(Grade).group_by(Student.id).order_by(desc('grades')).limit(5).all()
-    return result
 
+    return print(f'{(a,b for a,b in result)}')
+
+
+def main(cmd: str):
+    cmd_dict = {
+        '1': select_01,
+        '2': select_02,
+        '3': select_03,
+        '4': select_04,
+        '5': select_05,
+        '6': select_06,
+        '7': select_07,
+        '8': select_08,
+        '9': select_09,
+        '10': select_10,
+        '11': select_11,
+        '12': select_12,
+        'x': select_x,
+    }
+    def func_runner(cmd):
+        return cmd_dict.get(cmd)
+
+    if cmd in cmd_dict.keys():
+        res = func_runner(cmd)
+        if res:
+            res()
 
 if __name__ == '__main__':
+    main(sys.argv[1])
     # print(select_01())
     # print(select_02())
     # print(select_03())
@@ -259,6 +286,6 @@ if __name__ == '__main__':
     # print(select_08())
     # print(select_09())
     # print(select_10())
-    print(select_11())
+    # print(select_11())
     # print(select_12())
     # print(select_x())
