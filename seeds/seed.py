@@ -11,7 +11,7 @@ from conf.models import Teacher, Student, Group, Subject, Grade
 fake = Faker('uk-UA')
 
 
-def academic_year(start: date, end: date) -> list():
+def academic_year(start: date, end: date) -> list:
     res = []
     current_date = start
     while current_date <= end:
