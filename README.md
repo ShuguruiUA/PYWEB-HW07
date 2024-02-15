@@ -5,6 +5,6 @@
 4. Run my_select.py to test SQL queries up to 12 different quires  exist inside this script
 ## Example
 ```commandline
-    python3 my_select.py x
+   $ python3 my_select.py x
 ```
 where x - commands from 1 to 12
